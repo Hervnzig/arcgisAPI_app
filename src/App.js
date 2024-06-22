@@ -3,11 +3,15 @@ import MapView from "./MapView";
 import LayerList from "./LayerList";
 import DataChart from "./DataChart";
 import SearchBar from "./SearchBar";
+import Filter from "./Filter";
+import BasemapSelector from "./BasemapSelector";
 
 const App = () => {
   const [view, setView] = useState(null);
   const [chartData, setChartData] = useState({ labels: [], values: [] });
   const [searchLocation, setSearchLocation] = useState(null);
+  const [filter, setFilter] = useState(null);
+  const [basemap, setBasemap] = useState("streets");
 
   useEffect(() => {
     if (view && view.map && view.map.layers) {
@@ -33,8 +37,15 @@ const App = () => {
 
   return (
     <div className="App">
+      <BasemapSelector onBasemapChange={setBasemap} />
       <SearchBar onSearch={setSearchLocation} />
-      <MapView setView={setView} searchLocation={searchLocation} />
+      <Filter onFilter={setFilter} />
+      <MapView
+        setView={setView}
+        searchLocation={searchLocation}
+        filter={filter}
+        basemap={basemap}
+      />
       {view && view.map && view.map.layers && <LayerList view={view} />}
       {view && view.map && view.map.layers && <DataChart data={chartData} />}
     </div>

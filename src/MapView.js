@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { loadModules } from "esri-loader";
 import { loadGeoJSONData, loadCSVData } from "./dataLoader";
 
-const MapView = ({ setView, searchLocation }) => {
+const MapView = ({ setView, searchLocation, filter, basemap }) => {
   const mapRef = useRef();
   const viewRef = useRef();
 
@@ -16,6 +16,9 @@ const MapView = ({ setView, searchLocation }) => {
         "esri/layers/GraphicsLayer",
         "esri/Graphic",
         "esri/widgets/Legend",
+        "esri/geometry/SpatialReference",
+        "esri/geometry/projection",
+        "esri/layers/FeatureLayer",
       ],
       { css: true }
     ).then(
@@ -27,9 +30,12 @@ const MapView = ({ setView, searchLocation }) => {
         GraphicsLayer,
         Graphic,
         Legend,
+        SpatialReference,
+        projection,
+        FeatureLayer,
       ]) => {
         const webMap = new WebMap({
-          basemap: "streets",
+          basemap: basemap || "streets",
         });
 
         const view = new MapView({
@@ -99,36 +105,67 @@ const MapView = ({ setView, searchLocation }) => {
 
         // Set view in parent component after it is fully initialized
         setView(view);
+
+        // Handle filtering
+        if (filter) {
+          const { type, value } = filter;
+          let query = "";
+
+          if (type === "region") {
+            query = `Region = '${value}'`;
+          } else if (type === "province") {
+            query = `Province = '${value}'`;
+          }
+
+          const transportLayer = view.map.findLayerById(
+            "transport-stations-layer"
+          );
+          if (transportLayer) {
+            transportLayer.definitionExpression = query;
+          }
+        }
       }
     );
-  }, [setView]);
+  }, [setView, filter, basemap]);
 
   useEffect(() => {
     if (searchLocation && viewRef.current) {
-      loadModules(["esri/Graphic"]).then(([Graphic]) => {
-        const point = {
-          type: "point",
+      loadModules([
+        "esri/Graphic",
+        "esri/geometry/Point",
+        "esri/geometry/projection",
+        "esri/geometry/SpatialReference",
+      ]).then(([Graphic, Point, projection, SpatialReference]) => {
+        const point = new Point({
           longitude: searchLocation.longitude,
           latitude: searchLocation.latitude,
-        };
-
-        const markerSymbol = {
-          type: "simple-marker",
-          color: [226, 119, 40], // Orange
-          outline: {
-            color: [255, 255, 255], // White
-            width: 2,
-          },
-        };
-
-        const pointGraphic = new Graphic({
-          geometry: point,
-          symbol: markerSymbol,
+          spatialReference: SpatialReference.WGS84,
         });
 
-        viewRef.current.graphics.removeAll();
-        viewRef.current.graphics.add(pointGraphic);
-        viewRef.current.goTo({ target: point, zoom: 14 });
+        projection.load().then(() => {
+          const projectedPoint = projection.project(
+            point,
+            viewRef.current.spatialReference
+          );
+
+          const markerSymbol = {
+            type: "simple-marker",
+            color: [226, 119, 40], // Orange
+            outline: {
+              color: [255, 255, 255], // White
+              width: 2,
+            },
+          };
+
+          const pointGraphic = new Graphic({
+            geometry: projectedPoint,
+            symbol: markerSymbol,
+          });
+
+          viewRef.current.graphics.removeAll();
+          viewRef.current.graphics.add(pointGraphic);
+          viewRef.current.goTo({ target: projectedPoint, zoom: 14 });
+        });
       });
     }
   }, [searchLocation]);
