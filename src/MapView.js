@@ -43,6 +43,11 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           map: webMap,
           center: [-7.0926, 31.7917], // Center on Morocco
           zoom: 6,
+          highlightOptions: {
+            color: [128, 128, 128, 0.4], // Gray color with 40% opacity
+            haloColor: "white",
+            haloOpacity: 0.8,
+          },
         });
 
         viewRef.current = view;
@@ -54,10 +59,14 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
 
         view.ui.add(basemapToggle, "bottom-right");
 
-        // Load GeoJSON and CSV data
-        loadGeoJSONData("/data/provinces.geojson", view, "Provinces");
-        loadGeoJSONData("/data/regions.geojson", view, "Regions");
-        loadCSVData("/data/transport_stations.csv", view);
+        // Load GeoJSON and CSV data in the correct order
+        loadGeoJSONData("/data/regions.geojson", view, "Regions").then(() => {
+          loadGeoJSONData("/data/provinces.geojson", view, "Provinces").then(
+            () => {
+              loadCSVData("/data/transport_stations.csv", view);
+            }
+          );
+        });
 
         // Create a GraphicsLayer for sketching
         const graphicsLayer = new GraphicsLayer();
@@ -149,12 +158,10 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           );
 
           const markerSymbol = {
-            type: "simple-marker",
-            color: [226, 119, 40], // Orange
-            outline: {
-              color: [255, 255, 255], // White
-              width: 2,
-            },
+            type: "picture-marker",
+            url: "https://example.com/vehicle-icon.png", // Replace with the URL of your car icon
+            width: "24px",
+            height: "24px",
           };
 
           const pointGraphic = new Graphic({
