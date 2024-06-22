@@ -1,0 +1,44 @@
+import React, { useEffect, useState } from "react";
+import MapView from "./MapView";
+import LayerList from "./LayerList";
+import DataChart from "./DataChart";
+import SearchBar from "./SearchBar";
+
+const App = () => {
+  const [view, setView] = useState(null);
+  const [chartData, setChartData] = useState({ labels: [], values: [] });
+  const [searchLocation, setSearchLocation] = useState(null);
+
+  useEffect(() => {
+    if (view && view.map && view.map.layers) {
+      // Update chart data when the map view changes
+      const updateChartData = () => {
+        const labels = [];
+        const values = [];
+
+        view.map.layers.items.forEach((layer) => {
+          if (layer.visible) {
+            labels.push(layer.title);
+            values.push(layer.graphics ? layer.graphics.items.length : 0);
+          }
+        });
+
+        setChartData({ labels, values });
+      };
+
+      view.watch("stationary", updateChartData);
+      view.map.layers.on("change", updateChartData);
+    }
+  }, [view]);
+
+  return (
+    <div className="App">
+      <SearchBar onSearch={setSearchLocation} />
+      <MapView setView={setView} searchLocation={searchLocation} />
+      {view && view.map && view.map.layers && <LayerList view={view} />}
+      {view && view.map && view.map.layers && <DataChart data={chartData} />}
+    </div>
+  );
+};
+
+export default App;
