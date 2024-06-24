@@ -1,16 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { loadModules } from "esri-loader";
 import { loadGeoJSONData, loadCSVData } from "./dataLoader";
 
 const MapView = ({
   setView,
   searchLocation,
-  filter,
-  basemap,
+  basemap = "streets-vector",
   setChartData,
 }) => {
   const mapRef = useRef();
   const viewRef = useRef();
+  const [selectedGraphic, setSelectedGraphic] = useState(null);
+  const [attributes, setAttributes] = useState({});
 
   useEffect(() => {
     loadModules(
@@ -47,7 +48,7 @@ const MapView = ({
         LayerList,
       ]) => {
         const webMap = new WebMap({
-          basemap: basemap || "streets",
+          basemap: basemap || "streets-vector",
         });
 
         const view = new MapView({
@@ -88,11 +89,14 @@ const MapView = ({
           });
         });
 
-        // Create a GraphicsLayer for sketching
+        // Create a GraphicsLayer for sketching and add it to the top
         const graphicsLayer = new GraphicsLayer({
           id: "user-sketches",
         });
         webMap.add(graphicsLayer);
+
+        // Ensure the graphicsLayer is the top layer
+        webMap.layers.reorder(graphicsLayer, 0);
 
         // Add the Sketch widget
         const sketch = new Sketch({
@@ -123,6 +127,7 @@ const MapView = ({
           selectedGraphics.forEach((graphic) => {
             graphicsLayer.remove(graphic);
           });
+          setSelectedGraphic(null); // Clear selection
         };
 
         // Add the delete button to the view
@@ -135,12 +140,13 @@ const MapView = ({
 
         view.ui.add(legend, "bottom-left");
 
-        // Add the LayerList widget
-        const layerList = new LayerList({
-          view: view,
-        });
-
-        view.ui.add(layerList, "top-left");
+        // Add the LayerList widget only once
+        if (!view.ui.find("layerList")) {
+          const layerList = new LayerList({
+            view: view,
+          });
+          view.ui.add(layerList, "top-left");
+        }
 
         // Set view in parent component after it is fully initialized
         setView(view);
@@ -192,31 +198,14 @@ const MapView = ({
               graphicsLayer.graphics.items.forEach((g) => {
                 if (g !== graphic) g.attributes.selected = false;
               });
+              setSelectedGraphic(graphic);
+              setAttributes(graphic.attributes); // Set attributes for editing
             }
           });
         });
-
-        // Handle filtering
-        if (filter) {
-          const { type, value } = filter;
-          let query = "";
-
-          if (type === "region") {
-            query = `Region = '${value}'`;
-          } else if (type === "province") {
-            query = `Province = '${value}'`;
-          }
-
-          const transportLayer = view.map.findLayerById(
-            "transport-stations-layer"
-          );
-          if (transportLayer) {
-            transportLayer.definitionExpression = query;
-          }
-        }
       }
     );
-  }, [setView, filter, basemap, setChartData]);
+  }, [setView, basemap, setChartData]);
 
   useEffect(() => {
     if (searchLocation && viewRef.current) {
@@ -262,8 +251,46 @@ const MapView = ({
     }
   }, [searchLocation]);
 
+  const handleAttributeChange = (e) => {
+    const { name, value } = e.target;
+    setAttributes((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAttributeSave = () => {
+    if (selectedGraphic) {
+      selectedGraphic.attributes = attributes;
+      setSelectedGraphic(null); // Clear selection after saving
+    }
+  };
+
   return (
-    <div className="map-view" ref={mapRef} style={{ height: "100vh" }}></div>
+    <div className="map-view-container">
+      <div className="map-view" ref={mapRef} style={{ height: "100vh" }}></div>
+      {selectedGraphic && (
+        <div className="attribute-editor">
+          <h3>Edit Attributes</h3>
+          <label>
+            Attribute 1:
+            <input
+              type="text"
+              name="attribute1"
+              value={attributes.attribute1 || ""}
+              onChange={handleAttributeChange}
+            />
+          </label>
+          <label>
+            Attribute 2:
+            <input
+              type="text"
+              name="attribute2"
+              value={attributes.attribute2 || ""}
+              onChange={handleAttributeChange}
+            />
+          </label>
+          <button onClick={handleAttributeSave}>Save</button>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -16,8 +16,8 @@ This web application allows users to interact with an interactive map using the 
 1. **Clone the Repository**
 
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/Hervnzig/arcgisAPI_app.git
+   cd arcgisAPI_app/
    ```
 
 2. **Install Dependencies**

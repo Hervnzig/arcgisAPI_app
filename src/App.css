@@ -28,6 +28,37 @@
   color: #61dafb;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+}
+
+.basemap-selector,
+.search-by-coordinates,
+.layer-list-container {
+  margin: 0 10px;
+}
+
+.basemap-selector label,
+.search-by-coordinates label {
+  margin-right: 10px;
+}
+
+.basemap-selector select,
+.search-by-coordinates input {
+  margin-right: 5px;
+}
+
+.layer-list-container .esri-layer-list {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
