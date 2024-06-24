@@ -44,9 +44,9 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           center: [-7.0926, 31.7917], // Center on Morocco
           zoom: 6,
           highlightOptions: {
-            color: [0, 125, 0, 0.4], // Dark green color with 40% opacity
-            haloColor: "grey",
-            haloOpacity: 0.4,
+            color: [0, 120, 0, 0.5], // Dark green color with 40% opacity
+            haloColor: "white",
+            haloOpacity: 1,
           },
         });
 
@@ -64,20 +64,22 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           "/data/regions.geojson",
           view,
           "Regions",
-          "rgba(100, 192, 0, 0.4)"
+          "rgba(193, 0, 0, 0.4)"
         ).then(() => {
           loadGeoJSONData(
             "/data/provinces.geojson",
             view,
             "Provinces",
-            "rgba(100, 192, 0, 0.4)"
+            "rgba(193, 0, 0, 0.4)"
           ).then(() => {
-            loadCSVData("/data/transport_stations.csv", view, "darkgreen");
+            loadCSVData("/data/transport_stations.csv", view, "#21d375");
           });
         });
 
         // Create a GraphicsLayer for sketching
-        const graphicsLayer = new GraphicsLayer();
+        const graphicsLayer = new GraphicsLayer({
+          id: "user-sketches",
+        });
         webMap.add(graphicsLayer);
 
         // Add the Sketch widget
@@ -141,6 +143,19 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
             transportLayer.definitionExpression = query;
           }
         }
+
+        // Add event listener for Sketch creation and update
+        sketch.on("create", (event) => {
+          if (event.state === "complete") {
+            countTransportStationsInGeometry(event.graphic.geometry, view);
+          }
+        });
+
+        sketch.on("update", (event) => {
+          if (event.state === "complete") {
+            countTransportStationsInGeometry(event.graphics[0].geometry, view);
+          }
+        });
       }
     );
   }, [setView, filter, basemap]);
@@ -192,6 +207,27 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
   return (
     <div className="map-view" ref={mapRef} style={{ height: "100vh" }}></div>
   );
+};
+
+// Function to count transport stations within the given geometry
+const countTransportStationsInGeometry = (geometry, view) => {
+  loadModules([
+    "esri/geometry/geometryEngine",
+    "esri/tasks/support/Query",
+  ]).then(([geometryEngine, Query]) => {
+    const transportLayer = view.map.findLayerById("transport-stations-layer");
+    if (transportLayer) {
+      const query = new Query();
+      query.geometry = geometry;
+      query.spatialRelationship = "intersects";
+      query.returnGeometry = false;
+      query.outFields = ["*"];
+
+      transportLayer.queryFeatures(query).then((result) => {
+        alert(`Transport Stations Count: ${result.features.length}`);
+      });
+    }
+  });
 };
 
 export default MapView;

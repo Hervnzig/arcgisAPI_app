@@ -34,7 +34,7 @@ export const loadCSVData = async (csvUrl, mapView, highlightColor) => {
         type: "simple-marker",
         style: "circle",
         color: highlightColor,
-        size: "15px",
+        size: "12px",
         outline: {
           color: "white",
           width: 0.5,
