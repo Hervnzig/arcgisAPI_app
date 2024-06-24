@@ -37,40 +37,42 @@ This web application allows users to interact with an interactive map using the 
 
 ## File Structure
 
-.
-├── .gitignore
-├── README.md
-├── package-lock.json
-├── package.json
-├── public
-│ ├── data
-│ │ ├── provinces.geojson
-│ │ ├── regions.geojson
-│ │ └── transport_stations.csv
-│ ├── favicon.ico
-│ ├── index.html
-│ ├── logo192.png
-│ ├── logo512.png
-│ ├── manifest.json
-│ └── robots.txt
-└── src
-├── components
-│ ├── BasemapSelector.js
-│ ├── DataChart.js
-│ ├── Filter.js
-│ ├── LayerList.js
-│ ├── MapView.js
-│ ├── SearchBar.js
-│ └── Header.js
-├── App.css
-├── App.js
-├── App.test.js
-├── dataLoader.js
-├── index.css
-├── index.js
-├── logo.svg
-├── reportWebVitals.js
-└── setupTests.js
+```bash
+ .
+ ├── .gitignore
+ ├── README.md
+ ├── package-lock.json
+ ├── package.json
+ ├── public
+ │ ├── data
+ │ │ ├── provinces.geojson
+ │ │ ├── regions.geojson
+ │ │ └── transport_stations.csv
+ │ ├── favicon.ico
+ │ ├── index.html
+ │ ├── logo192.png
+ │ ├── logo512.png
+ │ ├── manifest.json
+ │ └── robots.txt
+ └── src
+ ├── components
+ │ ├── BasemapSelector.js
+ │ ├── DataChart.js
+ │ ├── Filter.js
+ │ ├── LayerList.js
+ │ ├── MapView.js
+ │ ├── SearchBar.js
+ │ └── Header.js
+ ├── App.css
+ ├── App.js
+ ├── App.test.js
+ ├── dataLoader.js
+ ├── index.css
+ ├── index.js
+ ├── logo.svg
+ ├── reportWebVitals.js
+ └── setupTests.js
+```
 
 ## Current Features
 
