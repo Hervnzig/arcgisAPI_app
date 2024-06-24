@@ -44,9 +44,9 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           center: [-7.0926, 31.7917], // Center on Morocco
           zoom: 6,
           highlightOptions: {
-            color: [128, 128, 128, 0.4], // Gray color with 40% opacity
-            haloColor: "white",
-            haloOpacity: 0.8,
+            color: [0, 125, 0, 0.4], // Dark green color with 40% opacity
+            haloColor: "grey",
+            haloOpacity: 0.4,
           },
         });
 
@@ -59,13 +59,21 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
 
         view.ui.add(basemapToggle, "bottom-right");
 
-        // Load GeoJSON and CSV data in the correct order
-        loadGeoJSONData("/data/regions.geojson", view, "Regions").then(() => {
-          loadGeoJSONData("/data/provinces.geojson", view, "Provinces").then(
-            () => {
-              loadCSVData("/data/transport_stations.csv", view);
-            }
-          );
+        // Load GeoJSON and CSV data in the correct order with colors
+        loadGeoJSONData(
+          "/data/regions.geojson",
+          view,
+          "Regions",
+          "rgba(100, 192, 0, 0.4)"
+        ).then(() => {
+          loadGeoJSONData(
+            "/data/provinces.geojson",
+            view,
+            "Provinces",
+            "rgba(100, 192, 0, 0.4)"
+          ).then(() => {
+            loadCSVData("/data/transport_stations.csv", view, "darkgreen");
+          });
         });
 
         // Create a GraphicsLayer for sketching
@@ -158,10 +166,14 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           );
 
           const markerSymbol = {
-            type: "picture-marker",
-            url: "https://example.com/vehicle-icon.png", // Replace with the URL of your car icon
-            width: "24px",
-            height: "24px",
+            type: "simple-marker",
+            style: "circle",
+            color: "red",
+            size: "15px",
+            outline: {
+              color: "white",
+              width: 1,
+            },
           };
 
           const pointGraphic = new Graphic({

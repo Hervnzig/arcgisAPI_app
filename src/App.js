@@ -1,10 +1,11 @@
+// App.js
 import React, { useEffect, useState } from "react";
-import MapView from "./MapView";
-import LayerList from "./LayerList";
-import DataChart from "./DataChart";
-import SearchBar from "./SearchBar";
-import Filter from "./Filter";
-import BasemapSelector from "./BasemapSelector";
+import MapView from "./components/MapView";
+import LayerList from "./components/LayerList";
+import DataChart from "./components/DataChart";
+import SearchBar from "./components/SearchBar";
+import Filter from "./components/Filter";
+import BasemapSelector from "./components/BasemapSelector";
 
 const App = () => {
   const [view, setView] = useState(null);
