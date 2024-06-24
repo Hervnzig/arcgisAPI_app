@@ -11,7 +11,11 @@ const MapView = ({
   const mapRef = useRef();
   const viewRef = useRef();
   const [selectedGraphic, setSelectedGraphic] = useState(null);
-  const [attributes, setAttributes] = useState({});
+  const [attributes, setAttributes] = useState({
+    name: "",
+    type: "",
+    capacity: "",
+  });
 
   useEffect(() => {
     loadModules(
@@ -85,7 +89,7 @@ const MapView = ({
             "Provinces",
             "rgba(193, 0, 0, 0.4)"
           ).then(() => {
-            loadCSVData("/data/transport_stations.csv", view, "#21d375");
+            loadCSVData("/data/transport_stations.csv", view, "green");
           });
         });
 
@@ -176,7 +180,12 @@ const MapView = ({
         // Handle Sketch create and update events
         sketch.on("create", (event) => {
           if (event.state === "complete") {
-            event.graphic.attributes = { selected: false }; // Initialize selected attribute
+            event.graphic.attributes = {
+              selected: false,
+              name: "",
+              type: "",
+              capacity: "",
+            }; // Initialize attributes
             countTransportStationsInGeometry(event.graphic.geometry);
           }
         });
@@ -191,15 +200,18 @@ const MapView = ({
         view.on("click", (event) => {
           view.hitTest(event).then((response) => {
             if (response.results.length) {
-              const graphic = response.results.filter(
+              const result = response.results.filter(
                 (result) => result.graphic.layer === graphicsLayer
-              )[0].graphic;
-              graphic.attributes.selected = !graphic.attributes.selected;
-              graphicsLayer.graphics.items.forEach((g) => {
-                if (g !== graphic) g.attributes.selected = false;
-              });
-              setSelectedGraphic(graphic);
-              setAttributes(graphic.attributes); // Set attributes for editing
+              )[0];
+              if (result) {
+                const graphic = result.graphic;
+                graphic.attributes.selected = !graphic.attributes.selected;
+                graphicsLayer.graphics.items.forEach((g) => {
+                  if (g !== graphic) g.attributes.selected = false;
+                });
+                setSelectedGraphic(graphic);
+                setAttributes(graphic.attributes); // Set attributes for editing
+              }
             }
           });
         });
@@ -270,20 +282,29 @@ const MapView = ({
         <div className="attribute-editor">
           <h3>Edit Attributes</h3>
           <label>
-            Attribute 1:
+            Name:
             <input
               type="text"
-              name="attribute1"
-              value={attributes.attribute1 || ""}
+              name="name"
+              value={attributes.name}
               onChange={handleAttributeChange}
             />
           </label>
           <label>
-            Attribute 2:
+            Type:
             <input
               type="text"
-              name="attribute2"
-              value={attributes.attribute2 || ""}
+              name="type"
+              value={attributes.type}
+              onChange={handleAttributeChange}
+            />
+          </label>
+          <label>
+            Capacity:
+            <input
+              type="text"
+              name="capacity"
+              value={attributes.capacity}
               onChange={handleAttributeChange}
             />
           </label>

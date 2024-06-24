@@ -38,40 +38,44 @@ This web application allows users to interact with an interactive map using the 
 ## File Structure
 
 ```bash
- .
- ├── .gitignore
- ├── README.md
- ├── package-lock.json
- ├── package.json
- ├── public
- │ ├── data
- │ │ ├── provinces.geojson
- │ │ ├── regions.geojson
- │ │ └── transport_stations.csv
- │ ├── favicon.ico
- │ ├── index.html
- │ ├── logo192.png
- │ ├── logo512.png
- │ ├── manifest.json
- │ └── robots.txt
- └── src
- ├── components
- │ ├── BasemapSelector.js
- │ ├── DataChart.js
- │ ├── Filter.js
- │ ├── LayerList.js
- │ ├── MapView.js
- │ ├── SearchBar.js
- │ └── Header.js
- ├── App.css
- ├── App.js
- ├── App.test.js
- ├── dataLoader.js
- ├── index.css
- ├── index.js
- ├── logo.svg
- ├── reportWebVitals.js
- └── setupTests.js
+.
+├── README.md
+├── folder-tree.txt
+├── package-lock.json
+├── package.json
+├── public
+│   ├── data
+│   │   ├── provinces.geojson
+│   │   ├── regions.geojson
+│   │   └── transport_stations.csv
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── manifest.json
+│   └── robots.txt
+└── src
+    ├── App.css
+    ├── App.js
+    ├── App.test.js
+    ├── components
+    │   ├── BasemapSelector.js
+    │   ├── DataChart.js
+    │   ├── Filter.js
+    │   ├── Header.js
+    │   ├── HeaderWithLayerList.js
+    │   ├── LayerList.js
+    │   ├── MapView.js
+    │   ├── SearchBar.js
+    │   ├── dataLoader.js
+    │   └── styles
+    │       ├── BasemapSelector.css
+    │       ├── Filter.css
+    │       ├── Header.css
+    │       └── SearchBar.css
+    ├── index.css
+    ├── index.js
+    ├── logo.svg
+    ├── reportWebVitals.js
+    └── setupTests.js
 ```
 
 ## Current Features
