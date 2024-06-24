@@ -2,7 +2,13 @@ import React, { useEffect, useRef } from "react";
 import { loadModules } from "esri-loader";
 import { loadGeoJSONData, loadCSVData } from "./dataLoader";
 
-const MapView = ({ setView, searchLocation, filter, basemap }) => {
+const MapView = ({
+  setView,
+  searchLocation,
+  filter,
+  basemap,
+  setChartData,
+}) => {
   const mapRef = useRef();
   const viewRef = useRef();
 
@@ -19,6 +25,9 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
         "esri/geometry/SpatialReference",
         "esri/geometry/projection",
         "esri/layers/FeatureLayer",
+        "esri/geometry/geometryEngine",
+        "esri/rest/support/Query",
+        "esri/widgets/LayerList",
       ],
       { css: true }
     ).then(
@@ -33,6 +42,9 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
         SpatialReference,
         projection,
         FeatureLayer,
+        geometryEngine,
+        Query,
+        LayerList,
       ]) => {
         const webMap = new WebMap({
           basemap: basemap || "streets",
@@ -44,7 +56,7 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
           center: [-7.0926, 31.7917], // Center on Morocco
           zoom: 6,
           highlightOptions: {
-            color: [0, 120, 0, 0.5], // Dark green color with 40% opacity
+            color: [0, 120, 0, 0.5], // Dark green color with 50% opacity
             haloColor: "white",
             haloOpacity: 1,
           },
@@ -92,6 +104,7 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
             tool: "none",
             enableRotation: true,
             enableScaling: true,
+            multipleSelectionEnabled: true,
           },
         });
 
@@ -104,11 +117,11 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
         deleteButton.title = "Delete Selected Geometry";
         deleteButton.innerHTML = '<span class="esri-icon-trash"></span>';
         deleteButton.onclick = () => {
-          const selectedGraphics = sketch.layer.graphics.items.filter(
-            (graphic) => graphic.selected
+          const selectedGraphics = graphicsLayer.graphics.items.filter(
+            (graphic) => graphic.attributes && graphic.attributes.selected
           );
           selectedGraphics.forEach((graphic) => {
-            sketch.layer.remove(graphic);
+            graphicsLayer.remove(graphic);
           });
         };
 
@@ -122,8 +135,66 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
 
         view.ui.add(legend, "bottom-left");
 
+        // Add the LayerList widget
+        const layerList = new LayerList({
+          view: view,
+        });
+
+        view.ui.add(layerList, "top-left");
+
         // Set view in parent component after it is fully initialized
         setView(view);
+
+        // Function to count transport stations within the given geometry
+        const countTransportStationsInGeometry = (geometry) => {
+          const transportLayer = view.map.findLayerById(
+            "transport-stations-layer"
+          );
+          if (transportLayer) {
+            const query = new Query({
+              geometry: geometry,
+              spatialRelationship: "intersects",
+              returnGeometry: false,
+              outFields: ["*"],
+            });
+
+            transportLayer.queryFeatures(query).then((result) => {
+              setChartData({
+                labels: ["Transport Stations"],
+                values: [result.features.length],
+              });
+            });
+          }
+        };
+
+        // Handle Sketch create and update events
+        sketch.on("create", (event) => {
+          if (event.state === "complete") {
+            event.graphic.attributes = { selected: false }; // Initialize selected attribute
+            countTransportStationsInGeometry(event.graphic.geometry);
+          }
+        });
+
+        sketch.on("update", (event) => {
+          if (event.state === "complete") {
+            countTransportStationsInGeometry(event.graphics[0].geometry);
+          }
+        });
+
+        // Handle map click for selection
+        view.on("click", (event) => {
+          view.hitTest(event).then((response) => {
+            if (response.results.length) {
+              const graphic = response.results.filter(
+                (result) => result.graphic.layer === graphicsLayer
+              )[0].graphic;
+              graphic.attributes.selected = !graphic.attributes.selected;
+              graphicsLayer.graphics.items.forEach((g) => {
+                if (g !== graphic) g.attributes.selected = false;
+              });
+            }
+          });
+        });
 
         // Handle filtering
         if (filter) {
@@ -143,22 +214,9 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
             transportLayer.definitionExpression = query;
           }
         }
-
-        // Add event listener for Sketch creation and update
-        sketch.on("create", (event) => {
-          if (event.state === "complete") {
-            countTransportStationsInGeometry(event.graphic.geometry, view);
-          }
-        });
-
-        sketch.on("update", (event) => {
-          if (event.state === "complete") {
-            countTransportStationsInGeometry(event.graphics[0].geometry, view);
-          }
-        });
       }
     );
-  }, [setView, filter, basemap]);
+  }, [setView, filter, basemap, setChartData]);
 
   useEffect(() => {
     if (searchLocation && viewRef.current) {
@@ -207,27 +265,6 @@ const MapView = ({ setView, searchLocation, filter, basemap }) => {
   return (
     <div className="map-view" ref={mapRef} style={{ height: "100vh" }}></div>
   );
-};
-
-// Function to count transport stations within the given geometry
-const countTransportStationsInGeometry = (geometry, view) => {
-  loadModules([
-    "esri/geometry/geometryEngine",
-    "esri/tasks/support/Query",
-  ]).then(([geometryEngine, Query]) => {
-    const transportLayer = view.map.findLayerById("transport-stations-layer");
-    if (transportLayer) {
-      const query = new Query();
-      query.geometry = geometry;
-      query.spatialRelationship = "intersects";
-      query.returnGeometry = false;
-      query.outFields = ["*"];
-
-      transportLayer.queryFeatures(query).then((result) => {
-        alert(`Transport Stations Count: ${result.features.length}`);
-      });
-    }
-  });
 };
 
 export default MapView;

@@ -1,4 +1,5 @@
 import React from "react";
+import "./styles/BasemapSelector.css";
 
 const BasemapSelector = ({ onBasemapChange }) => {
   const handleBasemapChange = (event) => {
@@ -6,7 +7,7 @@ const BasemapSelector = ({ onBasemapChange }) => {
   };
 
   return (
-    <div>
+    <div className="basemap-selector">
       <h3>Select Basemap</h3>
       <select onChange={handleBasemapChange}>
         <option value="streets">Streets</option>

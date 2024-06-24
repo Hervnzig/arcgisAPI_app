@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./styles/SearchBar.css";
 
 const SearchBar = ({ onSearch }) => {
   const [longitude, setLongitude] = useState("");
@@ -14,7 +15,7 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <div>
+    <div className="search-bar">
       <h3>Search by Coordinates</h3>
       <input
         type="text"

@@ -1,11 +1,9 @@
-// App.js
 import React, { useEffect, useState } from "react";
 import MapView from "./components/MapView";
 import LayerList from "./components/LayerList";
 import DataChart from "./components/DataChart";
-import SearchBar from "./components/SearchBar";
-import Filter from "./components/Filter";
-import BasemapSelector from "./components/BasemapSelector";
+import Header from "./components/Header";
+import "./App.css";
 
 const App = () => {
   const [view, setView] = useState(null);
@@ -38,9 +36,11 @@ const App = () => {
 
   return (
     <div className="App">
-      <BasemapSelector onBasemapChange={setBasemap} />
-      <SearchBar onSearch={setSearchLocation} />
-      <Filter onFilter={setFilter} />
+      <Header
+        onBasemapChange={setBasemap}
+        onSearch={setSearchLocation}
+        onFilter={setFilter}
+      />
       <MapView
         setView={setView}
         searchLocation={searchLocation}

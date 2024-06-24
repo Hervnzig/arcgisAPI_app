@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./styles/Filter.css";
 
 const Filter = ({ onFilter }) => {
   const [filterType, setFilterType] = useState("region");
@@ -9,7 +10,7 @@ const Filter = ({ onFilter }) => {
   };
 
   return (
-    <div>
+    <div className="filter">
       <h3>Filter Transport Stations</h3>
       <select
         onChange={(e) => setFilterType(e.target.value)}

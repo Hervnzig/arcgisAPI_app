@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# ArcGIS API Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This web application allows users to interact with an interactive map using the ArcGIS API. Users can create, modify, and delete geometries, manage layers, and visualize data related to transport stations.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Interactive Map**: Display map with different basemap options.
+- **Geometry Creation and Modification**: Tools for creating, modifying, and deleting points, lines, and polygons.
+- **Attribute and Geometry Modification**: Modify geometry and attributes of existing objects.
+- **Layer Management**: View and manage layers created by users.
+- **Data Visualization**: Create charts to visualize data from the map.
+- **Search by Coordinates**: Search for locations using latitude and longitude.
 
-### `npm start`
+## Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. **Clone the Repository**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
 
-### `npm test`
+2. **Install Dependencies**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   npm install
+   ```
 
-### `npm run build`
+3. **Start the Development Server**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   npm start
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Open the Application**
+   Open your web browser and navigate to `http://localhost:3000`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## File Structure
 
-### `npm run eject`
+.
+├── .gitignore
+├── README.md
+├── package-lock.json
+├── package.json
+├── public
+│ ├── data
+│ │ ├── provinces.geojson
+│ │ ├── regions.geojson
+│ │ └── transport_stations.csv
+│ ├── favicon.ico
+│ ├── index.html
+│ ├── logo192.png
+│ ├── logo512.png
+│ ├── manifest.json
+│ └── robots.txt
+└── src
+├── components
+│ ├── BasemapSelector.js
+│ ├── DataChart.js
+│ ├── Filter.js
+│ ├── LayerList.js
+│ ├── MapView.js
+│ ├── SearchBar.js
+│ └── Header.js
+├── App.css
+├── App.js
+├── App.test.js
+├── dataLoader.js
+├── index.css
+├── index.js
+├── logo.svg
+├── reportWebVitals.js
+└── setupTests.js
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Current Features
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. **Interactive Map**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   - Display map with different basemap options.
+   - Enable panning and zooming functionality.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+2. **Geometry Creation and Modification**
 
-## Learn More
+   - Tools for creating, modifying, and deleting points, lines, and polygons.
+   - Sketch widget for creating and updating geometries.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3. **Attribute and Geometry Modification**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   - Modify geometry and attributes of existing objects.
+   - Selection of geometries to view and edit attributes.
 
-### Code Splitting
+4. **Layer Management**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   - View and manage layers created by users.
+   - Toggle visibility of layers.
 
-### Analyzing the Bundle Size
+5. **Data Visualization**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+   - Create charts to visualize data from the map.
+   - Ensure queries and filters update both the map and the charts.
 
-### Making a Progressive Web App
+6. **Search by Coordinates**
+   - Search for locations using latitude and longitude.
+   - Mark search results on the map.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Contributing
 
-### Advanced Configuration
+Feel free to submit issues and pull requests. We welcome contributions from the community!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## License
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License. See the LICENSE file for details.
