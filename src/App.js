@@ -4,6 +4,7 @@ import LayerList from "./components/LayerList";
 import DataChart from "./components/DataChart";
 import Header from "./components/Header";
 import DropdownMenu from "./components/DropdownMenu";
+import Filter from "./components/Filter"; // Import Filter component
 import "./App.css";
 
 const App = () => {
@@ -13,6 +14,7 @@ const App = () => {
   const [filter, setFilter] = useState(null);
   const [basemap, setBasemap] = useState("streets-vector");
   const [savedSearches, setSavedSearches] = useState([]);
+  const [regions, setRegions] = useState([]);
 
   const saveSearch = (name, polygon, count) => {
     setSavedSearches([...savedSearches, { name, polygon, count }]);
@@ -51,6 +53,13 @@ const App = () => {
     }
   }, [view]);
 
+  useEffect(() => {
+    // Fetch regions data
+    fetch("/data/regions.geojson")
+      .then((response) => response.json())
+      .then((data) => setRegions(data.features.map((f) => f.properties.name)));
+  }, []);
+
   return (
     <div className="App">
       <Header
@@ -58,14 +67,16 @@ const App = () => {
         onSearch={setSearchLocation}
         onFilter={setFilter}
       />
+      <Filter onFilter={setFilter} regions={regions} />
       <MapView
         setView={setView}
         searchLocation={searchLocation}
         filter={filter}
         basemap={basemap}
         setChartData={setChartData}
-        chartData={chartData} // Pass chartData to MapView
-        saveSearch={saveSearch} // Pass saveSearch to MapView
+        chartData={chartData}
+        saveSearch={saveSearch}
+        regions={regions}
       />
       {view && view.map && view.map.layers && <LayerList view={view} />}
       <div className="chart-popup">

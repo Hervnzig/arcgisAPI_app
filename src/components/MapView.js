@@ -8,10 +8,13 @@ const MapView = ({
   basemap = "streets-vector",
   setChartData,
   saveSearch,
-  chartData, // Add chartData as a prop
+  chartData,
+  filter,
+  regions,
 }) => {
   const mapRef = useRef();
   const viewRef = useRef();
+  const layerListRef = useRef(false); // Add useRef to track LayerList widget
   const [selectedGraphic, setSelectedGraphic] = useState(null);
   const [attributes, setAttributes] = useState({
     name: "",
@@ -32,7 +35,6 @@ const MapView = ({
         "esri/widgets/Legend",
         "esri/geometry/SpatialReference",
         "esri/geometry/projection",
-        "esri/layers/FeatureLayer",
         "esri/geometry/geometryEngine",
         "esri/rest/support/Query",
         "esri/widgets/LayerList",
@@ -50,7 +52,6 @@ const MapView = ({
           Legend,
           SpatialReference,
           projection,
-          FeatureLayer,
           geometryEngine,
           Query,
           LayerList,
@@ -149,11 +150,13 @@ const MapView = ({
           view.ui.add(legend, "bottom-left");
 
           // Add the LayerList widget only once
-          if (!view.ui.find("layerList")) {
+          if (!layerListRef.current) {
+            // Check if LayerList is already added
             const layerList = new LayerList({
               view: view,
             });
             view.ui.add(layerList, "top-left");
+            layerListRef.current = true; // Set ref to true after adding LayerList
           }
 
           // Set view in parent component after it is fully initialized
@@ -279,6 +282,74 @@ const MapView = ({
         });
     }
   }, [searchLocation]);
+
+  useEffect(() => {
+    if (filter && viewRef.current) {
+      const applyFilter = async () => {
+        const [Query, Graphic] = await loadModules([
+          "esri/rest/support/Query",
+          "esri/Graphic",
+        ]);
+
+        const regionsLayer = viewRef.current.map.layers.find(
+          (layer) => layer.title === "Regions"
+        );
+
+        const transportLayer = viewRef.current.map.layers.find(
+          (layer) => layer.title === "Transport Stations"
+        );
+
+        if (regionsLayer && transportLayer) {
+          const query = new Query({
+            where: `name = '${filter.value}'`,
+            returnGeometry: true,
+            outFields: ["*"],
+          });
+
+          const result = await regionsLayer.queryFeatures(query);
+
+          if (result.features.length > 0) {
+            const regionGeometry = result.features[0].geometry;
+            const transportQuery = new Query({
+              geometry: regionGeometry,
+              spatialRelationship: "intersects",
+              returnGeometry: true,
+              outFields: ["*"],
+            });
+
+            const transportResult = await transportLayer.queryFeatures(
+              transportQuery
+            );
+            viewRef.current.graphics.removeAll();
+
+            transportResult.features.forEach((feature) => {
+              const graphic = new Graphic({
+                geometry: feature.geometry,
+                symbol: {
+                  type: "simple-marker",
+                  style: "circle",
+                  color: "green",
+                  size: "10px",
+                  outline: {
+                    color: "white",
+                    width: 0.4,
+                  },
+                },
+                attributes: feature.attributes,
+              });
+              viewRef.current.graphics.add(graphic);
+            });
+
+            setChartData({
+              labels: ["Transport Stations"],
+              values: [transportResult.features.length],
+            });
+          }
+        }
+      };
+      applyFilter();
+    }
+  }, [filter, setChartData]);
 
   const handleAttributeChange = (e) => {
     const { name, value } = e.target;

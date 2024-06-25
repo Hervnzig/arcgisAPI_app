@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/Filter.css";
 
-const Filter = ({ onFilter }) => {
+const Filter = ({ onFilter, regions = [] }) => {
   const [filterType, setFilterType] = useState("region");
   const [filterValue, setFilterValue] = useState("");
 
+  useEffect(() => {
+    if (regions.length > 0) {
+      setFilterValue(regions[0]);
+    }
+  }, [regions]);
+
   const handleFilter = () => {
-    onFilter(filterType, filterValue);
+    onFilter({ type: filterType, value: filterValue });
   };
 
   return (
@@ -15,16 +21,20 @@ const Filter = ({ onFilter }) => {
       <select
         onChange={(e) => setFilterType(e.target.value)}
         value={filterType}
+        disabled
       >
         <option value="region">Region</option>
-        <option value="province">Province</option>
       </select>
-      <input
-        type="text"
-        placeholder="Enter value"
-        value={filterValue}
+      <select
         onChange={(e) => setFilterValue(e.target.value)}
-      />
+        value={filterValue}
+      >
+        {regions.map((region) => (
+          <option key={region} value={region}>
+            {region}
+          </option>
+        ))}
+      </select>
       <button onClick={handleFilter}>Filter</button>
     </div>
   );
