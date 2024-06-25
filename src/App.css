@@ -28,6 +28,51 @@
   color: #61dafb;
 }
 
+.chart-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000;
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+
+.chart-popup h2 {
+  margin-top: 0;
+}
+
+.attribute-editor, .save-polygon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000;
+}
+
+.save-polygon {
+  top: 200px; /* Adjust this value to position correctly */
+}
+
+.dropdown-menu {
+  position: fixed;
+  top: 400px; /* Adjust this value to position correctly */
+  right: 20px;
+  width: 300px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000;
+}
 
 .basemap-selector,
 .search-by-coordinates,

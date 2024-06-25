@@ -16,10 +16,23 @@ const DataChart = ({ data }) => {
     ],
   };
 
+  const options = {
+    maintainAspectRatio: false, // Ensure the chart respects container dimensions
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true,
+      },
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
   return (
-    <div>
+    <div style={{ width: "100%", height: "300px" }}>
       <h2>Transport Stations Count</h2>
-      <Bar data={chartData} />
+      <Bar data={chartData} options={options} />
     </div>
   );
 };
