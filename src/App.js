@@ -4,7 +4,6 @@ import LayerList from "./components/LayerList";
 import DataChart from "./components/DataChart";
 import Header from "./components/Header";
 import DropdownMenu from "./components/DropdownMenu";
-import Filter from "./components/Filter"; // Import Filter component
 import "./App.css";
 
 const App = () => {
@@ -67,7 +66,6 @@ const App = () => {
         onSearch={setSearchLocation}
         onFilter={setFilter}
       />
-      <Filter onFilter={setFilter} regions={regions} />
       <MapView
         setView={setView}
         searchLocation={searchLocation}

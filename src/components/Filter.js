@@ -21,7 +21,6 @@ const Filter = ({ onFilter, regions = [] }) => {
       <select
         onChange={(e) => setFilterType(e.target.value)}
         value={filterType}
-        disabled
       >
         <option value="region">Region</option>
       </select>
